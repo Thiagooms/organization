@@ -56,3 +56,25 @@ O projeto segue a estrutura padrão de camadas do Spring Boot:
 - **DTO** — objetos de transferência de dados para entrada/saída dos endpoints
 
 Lombok é usado para reduzir boilerplate nas entidades e DTOs (`@Data`, `@Builder`, `@NoArgsConstructor`, etc.).
+
+## Commits
+
+Use **commits semânticos** em **linha única** e em **inglês**:
+
+- `feat:` — nova funcionalidade
+- `fix:` — correção de bug
+- `refactor:` — refatoração sem alterar comportamento
+- `docs:` — mudanças em documentação
+- `style:` — formatação, sem alterar lógica
+- `test:` — adição/alteração de testes
+- `chore:` — tarefas de manutenção (deps, config)
+
+**Exemplos:**
+```
+feat: add user authentication
+fix: resolve null pointer in user service
+refactor: simplify period controller logic
+docs: update readme with setup instructions
+```
+
+Não coloque nome do autor no commit message — git já rastreia isso.
