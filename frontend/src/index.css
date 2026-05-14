@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  @apply antialiased;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900;
+}
+
+button {
+  @apply transition-colors duration-200;
+}
+
+input,
+textarea,
+select {
+  @apply transition-colors duration-200;
+}

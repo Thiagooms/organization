@@ -2,6 +2,21 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Monorepo Structure
+
+```
+organization/
+├── backend/           (Spring Boot - Java)
+│   ├── src/
+│   ├── pom.xml
+│   └── mvnw
+├── frontend/          (React - JavaScript)
+│   ├── src/
+│   ├── package.json
+│   └── vite.config.js
+└── package.json       (Root - workspaces)
+```
+
 ## Stack
 
 - Java 21
@@ -11,6 +26,27 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Maven
 
 ## Comandos
+
+### Frontend (React)
+
+```bash
+# Instalar dependências
+npm install
+
+# Desenvolvimento (Vite dev server)
+npm run dev
+
+# Build para produção
+npm run build
+
+# Preview do build
+npm run preview
+
+# Lint
+npm run lint
+```
+
+### Backend (Spring Boot)
 
 ```bash
 # Build
@@ -28,6 +64,44 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Rodar um método de teste específico
 ./mvnw test -Dtest=NomeDaClasseTest#nomeDoMetodo
 ```
+
+### Monorepo (Root)
+
+```bash
+# Instalar tudo
+npm install
+
+# Rodar frontend em desenvolvimento
+npm run dev
+
+# Build frontend
+npm run build
+
+# Build backend
+npm run backend:build
+
+# Rodar backend
+npm run backend:run
+```
+
+## Frontend Stack
+
+- **React 18** — UI framework
+- **Vite** — Build tool e dev server
+- **Tailwind CSS** — Utility-first CSS
+- **React Router v6** — Client-side routing
+- **Axios** — HTTP client
+- **Lucide Icons** — Icon library (minimalista)
+
+Frontend comunica com backend via proxy em `http://localhost:8080/api`
+
+## Backend Stack
+
+- **Spring Boot 4.0.6** — Web framework
+- **Spring Data JPA** — ORM
+- **Spring Validation** — Bean validation
+- **PostgreSQL** — Database
+- **Lombok** — Boilerplate reduction
 
 ## Configuração
 
