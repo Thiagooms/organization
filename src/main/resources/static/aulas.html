@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aulas - Organização Acadêmica</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+    <style>
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ecf0f1;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 15px;
+            color: #7f8c8d;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: #2c3e50;
+        }
+
+        .tab-btn.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .aula-item {
+            margin-bottom: 15px;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            background: white;
+            border-radius: 4px;
+        }
+
+        .aula-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .aula-header h3 {
+            margin: 0;
+            color: #2c3e50;
+        }
+
+        .aula-details {
+            display: none;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        .aula-details.show {
+            display: block;
+        }
+
+        .aula-detail-row {
+            margin: 8px 0;
+            font-size: 14px;
+        }
+
+        .aula-detail-row strong {
+            color: #2c3e50;
+        }
+
+        .aula-detail-row p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .aula-actions {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .aula-actions button {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📚 Organização Acadêmica</h1>
+        <nav>
+            <a href="index.html">Dashboard</a>
+            <a href="periodos.html">Períodos</a>
+            <a href="disciplinas.html">Disciplinas</a>
+            <a href="aulas.html">Aulas</a>
+            <a href="atividades.html">Atividades</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="alert"></div>
+
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>Aulas do Período: <span id="periodoNome">-</span></h2>
+                <button onclick="abrirFormulario()">+ Registrar Aula</button>
+            </div>
+
+            <div id="noPeriodo" class="empty-state">
+                <p>Nenhum período ativo. Ative um em <a href="periodos.html">Períodos</a>.</p>
+            </div>
+
+            <div id="disciplinasContainer">
+                <div class="tabs" id="tabs"></div>
+                <div id="tabContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="aulaModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="fecharFormulario()">&times;</span>
+            <h2 id="formTitulo">Nova Aula</h2>
+            <form id="aulaForm" onsubmit="salvarAula(event)">
+                <div class="form-group">
+                    <label for="disciplinaSelect">Disciplina</label>
+                    <select id="disciplinaSelect" required>
+                        <option value="">Selecione uma disciplina...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="data">Data da Aula</label>
+                    <input type="date" id="data" required>
+                </div>
+                <div class="form-group">
+                    <label for="conteudo">Conteúdo Abordado</label>
+                    <textarea id="conteudo"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Gostei da Aula (1-5)</label>
+                    <input type="number" id="satisfacao" min="1" max="5" required>
+                </div>
+                <div class="form-group">
+                    <label>Nível de Dificuldade (1-5)</label>
+                    <input type="number" id="dificuldade" min="1" max="5" required>
+                </div>
+                <div class="form-group">
+                    <label for="duvidas">Dúvidas</label>
+                    <textarea id="duvidas"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="observacoes">Observações</label>
+                    <textarea id="observacoes"></textarea>
+                </div>
+                <div class="btn-group">
+                    <button type="submit">Salvar</button>
+                    <button type="button" onclick="fecharFormulario()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/aulas.js"></script>
+</body>
+</html>

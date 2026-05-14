@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disciplinas - Organização Acadêmica</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+</head>
+<body>
+    <header>
+        <h1>📚 Organização Acadêmica</h1>
+        <nav>
+            <a href="index.html">Dashboard</a>
+            <a href="periodos.html">Períodos</a>
+            <a href="disciplinas.html">Disciplinas</a>
+            <a href="aulas.html">Aulas</a>
+            <a href="atividades.html">Atividades</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="alert"></div>
+
+        <div class="card">
+            <h2>Disciplinas do Período: <span id="periodoAtivo">-</span></h2>
+            <button onclick="abrirFormulario()">+ Nova Disciplina</button>
+            <div id="listaDisciplinas" class="empty-state">
+                <p>Carregando...</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="disciplinaModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="fecharFormulario()">&times;</span>
+            <h2 id="formTitulo">Nova Disciplina</h2>
+            <form id="disciplinaForm" onsubmit="salvarDisciplina(event)">
+                <div class="form-group">
+                    <label for="nome">Nome da Disciplina</label>
+                    <input type="text" id="nome" required>
+                </div>
+                <div class="form-group">
+                    <label for="professor">Professor</label>
+                    <input type="text" id="professor" required>
+                </div>
+                <div class="form-group">
+                    <label for="cargaHoraria">Carga Horária (h)</label>
+                    <input type="number" id="cargaHoraria" min="1" required>
+                </div>
+                <div class="btn-group">
+                    <button type="submit">Salvar</button>
+                    <button type="button" onclick="fecharFormulario()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/disciplinas.js"></script>
+</body>
+</html>

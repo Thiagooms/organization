@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Organização Acadêmica</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+</head>
+<body>
+    <header>
+        <h1>📚 Organização Acadêmica</h1>
+        <nav>
+            <a href="index.html">Dashboard</a>
+            <a href="periodos.html">Períodos</a>
+            <a href="disciplinas.html">Disciplinas</a>
+            <a href="aulas.html">Aulas</a>
+            <a href="atividades.html">Atividades</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="alert"></div>
+
+        <div class="card">
+            <h2>Período Ativo</h2>
+            <div id="periodoAtivo" class="empty-state">
+                <p>Nenhum período ativo. Acesse <a href="periodos.html">Períodos</a> para criar um.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Resumo</h2>
+            <div id="stats" class="stats"></div>
+        </div>
+
+        <div class="card">
+            <h2>Disciplinas do Período</h2>
+            <div id="disciplinas" class="empty-state">
+                <p>Nenhuma disciplina cadastrada.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Atividades Pendentes</h2>
+            <div id="atividades" class="empty-state">
+                <p>Nenhuma atividade pendente. Parabéns! 🎉</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        let periodoAtivoId = null;
+
+        const carregarPeriodoAtivo = async () => {
+            try {
+                const periodoData = await periodo.obterAtivo();
+                periodoAtivoId = periodoData.id;
+
+                const periodoDiv = document.getElementById('periodoAtivo');
+                periodoDiv.innerHTML = `
+                    <div class="list-item ativo">
+                        <div class="list-item-info">
+                            <h3>${periodoData.nome}</h3>
+                            <p>Início: ${new Date(periodoData.dataInicio).toLocaleDateString('pt-BR')}</p>
+                            <p>Fim: ${new Date(periodoData.dataFim).toLocaleDateString('pt-BR')}</p>
+                        </div>
+                        <span class="badge ativo">Ativo</span>
+                    </div>
+                `;
+
+                await carregarDisciplinas();
+            } catch (error) {
+                const periodoDiv = document.getElementById('periodoAtivo');
+                periodoDiv.innerHTML = '<p>Nenhum período ativo. Acesse <a href="periodos.html">Períodos</a> para criar um.</p>';
+            }
+        };
+
+        const carregarDisciplinas = async () => {
+            if (!periodoAtivoId) return;
+
+            try {
+                const disciplinas = await disciplina.listarPorPeriodo(periodoAtivoId);
+                const disciplinasDiv = document.getElementById('disciplinas');
+
+                if (disciplinas.length === 0) {
+                    disciplinasDiv.innerHTML = '<p>Nenhuma disciplina cadastrada.</p>';
+                    return;
+                }
+
+                disciplinasDiv.innerHTML = disciplinas.map(d => `
+                    <div class="list-item">
+                        <div class="list-item-info">
+                            <h3>${d.nome}</h3>
+                            <p>Professor: ${d.professor}</p>
+                            <p>Carga Horária: ${d.cargaHoraria}h</p>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Erro ao carregar disciplinas:', error);
+            }
+        };
+
+        const carregarAtividadesPendentes = async () => {
+            try {
+                const atividades = await atividade.listarPendentes();
+                const atividadesDiv = document.getElementById('atividades');
+
+                if (atividades.length === 0) {
+                    atividadesDiv.innerHTML = '<p>Nenhuma atividade pendente. Parabéns! 🎉</p>';
+                    return;
+                }
+
+                atividadesDiv.innerHTML = atividades.map(a => `
+                    <div class="list-item">
+                        <div class="list-item-info">
+                            <h3>${a.titulo}</h3>
+                            <p>Tipo: ${a.tipo}</p>
+                            <p>Entrega: ${new Date(a.dataEntrega).toLocaleDateString('pt-BR')}</p>
+                        </div>
+                        <button class="success" onclick="marcarConcluida(${a.id})">Concluir</button>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Erro ao carregar atividades:', error);
+            }
+        };
+
+        const carregarStats = async () => {
+            if (!periodoAtivoId) return;
+
+            try {
+                const disciplinas = await disciplina.listarPorPeriodo(periodoAtivoId);
+                let totalAulas = 0;
+                let somaDificuldades = 0;
+                let contagemDificuldades = 0;
+
+                for (const disc of disciplinas) {
+                    const aulas = await aula.listarPorDisciplina(disc.id);
+                    totalAulas += aulas.length;
+                    aulas.forEach(a => {
+                        somaDificuldades += a.dificuldade;
+                        contagemDificuldades++;
+                    });
+                }
+
+                const pendentes = await atividade.listarPendentes();
+                const mediaDificuldade = contagemDificuldades > 0 ? (somaDificuldades / contagemDificuldades).toFixed(1) : 0;
+
+                const statsDiv = document.getElementById('stats');
+                statsDiv.innerHTML = `
+                    <div class="stat-card">
+                        <div class="number">${disciplinas.length}</div>
+                        <div class="label">Disciplinas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">${totalAulas}</div>
+                        <div class="label">Aulas Registradas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">${pendentes.length}</div>
+                        <div class="label">Atividades Pendentes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">${mediaDificuldade}</div>
+                        <div class="label">Dificuldade Média</div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Erro ao carregar stats:', error);
+            }
+        };
+
+        const marcarConcluida = async (atividadeId) => {
+            try {
+                await atividade.marcarConcluida(atividadeId);
+                showAlert('Atividade marcada como concluída!', 'success');
+                await carregarAtividadesPendentes();
+            } catch (error) {
+                console.error('Erro:', error);
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarPeriodoAtivo();
+            carregarAtividadesPendentes();
+        });
+    </script>
+</body>
+</html>
