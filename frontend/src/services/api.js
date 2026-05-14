@@ -45,4 +45,13 @@ export const atividadeAPI = {
   delete: (id) => api.delete(`/aulas/atividades/${id}`),
 }
 
+export const monitoriaAPI = {
+  list: () => api.get('/monitorias'),
+  getById: (id) => api.get(`/monitorias/${id}`),
+  create: (data) => api.post('/monitorias', data),
+  update: (id, data) => api.put(`/monitorias/${id}`, data),
+  activate: (id) => api.patch(`/monitorias/${id}/ativar`),
+  delete: (id) => api.delete(`/monitorias/${id}`),
+}
+
 export default api

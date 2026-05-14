@@ -1,12 +1,14 @@
 import { Link, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Calendar, BookOpen, Clock, CheckSquare, X } from 'lucide-react'
+import { LayoutDashboard, Calendar, BookOpen, Clock, CheckSquare, Flag, GraduationCap, X } from 'lucide-react'
 
 const menuItems = [
-  { label: 'Dashboard', path: '/' , icon: LayoutDashboard },
-  { label: 'Períodos',  path: '/periodos',    icon: Calendar },
-  { label: 'Disciplinas', path: '/disciplinas', icon: BookOpen },
-  { label: 'Aulas',    path: '/aulas',       icon: Clock },
-  { label: 'Atividades', path: '/atividades', icon: CheckSquare },
+  { label: 'Dashboard',    path: '/',           icon: LayoutDashboard },
+  { label: 'Períodos',     path: '/periodos',   icon: Calendar },
+  { label: 'Disciplinas',  path: '/disciplinas', icon: BookOpen },
+  { label: 'Aulas',        path: '/aulas',      icon: Clock },
+  { label: 'Atividades',   path: '/atividades', icon: CheckSquare },
+  { label: 'Prioridade',   path: '/prioridade', icon: Flag },
+  { label: 'Monitoria',    path: '/monitoria',  icon: GraduationCap },
 ]
 
 const activeClass = 'bg-blue-600 text-white'

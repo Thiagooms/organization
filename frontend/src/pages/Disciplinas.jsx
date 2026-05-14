@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Plus, AlertCircle, CheckCircle } from 'lucide-react'
+import { Plus, AlertCircle, CheckCircle, Pencil } from 'lucide-react'
 import { periodoAPI, disciplinaAPI } from '../services/api'
 
 export default function Disciplinas() {
@@ -11,6 +11,12 @@ export default function Disciplinas() {
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
   const [formData, setFormData] = useState({
+    nome: '',
+    professor: '',
+    cargaHoraria: '',
+  })
+  const [editingId, setEditingId] = useState(null)
+  const [editFormData, setEditFormData] = useState({
     nome: '',
     professor: '',
     cargaHoraria: '',
@@ -51,6 +57,37 @@ export default function Disciplinas() {
       loadData()
     } catch (err) {
       setError('Erro ao criar disciplina. Tente novamente.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const handleEdit = (disc) => {
+    setEditingId(disc.id)
+    setEditFormData({
+      nome: disc.nome,
+      professor: disc.professor,
+      cargaHoraria: String(disc.cargaHoraria),
+    })
+    setError(null)
+  }
+
+  const handleUpdate = async (e) => {
+    e.preventDefault()
+    setError(null)
+    setSubmitting(true)
+
+    try {
+      await disciplinaAPI.update(editingId, {
+        ...editFormData,
+        cargaHoraria: parseInt(editFormData.cargaHoraria),
+      })
+      setSuccess('Disciplina atualizada com sucesso!')
+      setEditingId(null)
+      setTimeout(() => setSuccess(null), 3000)
+      loadData()
+    } catch {
+      setError('Erro ao atualizar disciplina. Tente novamente.')
     } finally {
       setSubmitting(false)
     }
@@ -164,9 +201,66 @@ export default function Disciplinas() {
               key={disc.id}
               className="bg-white rounded-lg border border-slate-200 border-l-4 border-l-disciplina-500 p-6 hover:border-disciplina-300 transition-colors"
             >
-              <h3 className="text-lg font-semibold text-slate-900">{disc.nome}</h3>
-              <p className="text-sm text-slate-600 mt-2">Professor: {disc.professor}</p>
-              <p className="text-sm text-slate-600">Carga Horária: {disc.cargaHoraria}h</p>
+              {editingId === disc.id ? (
+                <form onSubmit={handleUpdate} className="space-y-3">
+                  <input
+                    type="text"
+                    placeholder="Nome da disciplina"
+                    value={editFormData.nome}
+                    onChange={(e) => setEditFormData({ ...editFormData, nome: e.target.value })}
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-20"
+                    required
+                  />
+                  <input
+                    type="text"
+                    placeholder="Professor"
+                    value={editFormData.professor}
+                    onChange={(e) => setEditFormData({ ...editFormData, professor: e.target.value })}
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-20"
+                    required
+                  />
+                  <input
+                    type="number"
+                    placeholder="Carga Horária (h)"
+                    value={editFormData.cargaHoraria}
+                    onChange={(e) => setEditFormData({ ...editFormData, cargaHoraria: e.target.value })}
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-20"
+                    min="1"
+                    required
+                  />
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="flex-1 bg-disciplina-600 text-white px-4 py-2 rounded-lg hover:bg-disciplina-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {submitting ? 'Salvando...' : 'Salvar'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setEditingId(null); setError(null) }}
+                      className="flex-1 bg-slate-200 text-slate-900 px-4 py-2 rounded-lg hover:bg-slate-300 transition-colors"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-900">{disc.nome}</h3>
+                    <p className="text-sm text-slate-600 mt-2">Professor: {disc.professor}</p>
+                    <p className="text-sm text-slate-600">Carga Horária: {disc.cargaHoraria}h</p>
+                  </div>
+                  <button
+                    onClick={() => handleEdit(disc)}
+                    className="text-slate-400 hover:text-disciplina-600 transition-colors p-1 rounded"
+                    title="Editar disciplina"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
             </div>
           ))}
         </div>

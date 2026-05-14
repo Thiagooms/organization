@@ -209,6 +209,70 @@ export default function Atividades() {
     return colors[tipo] || 'border-l-slate-300'
   }
 
+  const getDeadlineStatus = (dataEntrega, concluida) => {
+    if (concluida) return 'concluida'
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const [y, m, d] = dataEntrega.split('-').map(Number)
+    const deadline = new Date(y, m - 1, d)
+    const diffDays = Math.ceil((deadline - today) / (1000 * 60 * 60 * 24))
+    if (diffDays < 0) return 'expirada'
+    if (diffDays === 0) return 'hoje'
+    if (diffDays <= 2) return 'critico'
+    if (diffDays <= 5) return 'urgente'
+    if (diffDays <= 10) return 'atencao'
+    return 'normal'
+  }
+
+  const getDeadlineBadge = (dataEntrega, concluida) => {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const [y, m, d] = dataEntrega.split('-').map(Number)
+    const deadline = new Date(y, m - 1, d)
+    const diffDays = Math.ceil((deadline - today) / (1000 * 60 * 60 * 24))
+    const status = getDeadlineStatus(dataEntrega, concluida)
+    const configs = {
+      concluida: { label: 'Entregue', className: 'bg-green-100 text-green-700 border border-green-200' },
+      expirada: { label: 'Expirado', className: 'bg-slate-800 text-slate-100' },
+      hoje: { label: 'Vence hoje!', className: 'bg-red-600 text-white' },
+      critico: { label: `${diffDays}d restantes`, className: 'bg-red-100 text-red-700 border border-red-200' },
+      urgente: { label: `${diffDays}d restantes`, className: 'bg-orange-100 text-orange-700 border border-orange-200' },
+      atencao: { label: `${diffDays}d restantes`, className: 'bg-amber-100 text-amber-700 border border-amber-200' },
+      normal: { label: `${diffDays}d restantes`, className: 'bg-slate-100 text-slate-500' },
+    }
+    return configs[status]
+  }
+
+  const getAtividadeCardStyle = (atividade) => {
+    const status = getDeadlineStatus(atividade.dataEntrega, atividade.concluida)
+    if (status === 'concluida') return 'bg-green-50 border border-green-200 border-l-4 border-l-green-500'
+    if (status === 'expirada') return 'bg-slate-50 border border-slate-300 border-l-4 border-l-slate-700'
+    if (status === 'hoje') return `bg-red-50 border border-red-200 border-l-4 ${getTipoBorderColor(atividade.tipo)}`
+    if (status === 'critico') return `bg-red-50/50 border border-red-100 border-l-4 ${getTipoBorderColor(atividade.tipo)}`
+    if (status === 'urgente') return `bg-orange-50/50 border border-orange-100 border-l-4 ${getTipoBorderColor(atividade.tipo)}`
+    return `bg-white border border-slate-200 border-l-4 ${getTipoBorderColor(atividade.tipo)}`
+  }
+
+  const getDiscPendingInfo = (disc) => {
+    const all = disc.aulas.flatMap((a) => a.atividades)
+    const pending = all.filter((a) => !a.concluida)
+    if (pending.length === 0) return null
+    const statuses = pending.map((a) => getDeadlineStatus(a.dataEntrega, a.concluida))
+    let urgency = 'normal'
+    for (const s of ['expirada', 'hoje', 'critico', 'urgente', 'atencao']) {
+      if (statuses.includes(s)) { urgency = s; break }
+    }
+    const badgeClass = {
+      expirada: 'bg-slate-800 text-slate-100',
+      hoje: 'bg-red-600 text-white',
+      critico: 'bg-red-100 text-red-700 border border-red-200',
+      urgente: 'bg-orange-100 text-orange-700 border border-orange-200',
+      atencao: 'bg-amber-100 text-amber-700 border border-amber-200',
+      normal: 'bg-slate-100 text-slate-600',
+    }[urgency]
+    return { count: pending.length, badgeClass }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -264,7 +328,18 @@ export default function Atividades() {
                   <span className="w-2.5 h-2.5 rounded-full bg-disciplina-500 flex-shrink-0" />
                   <div>
                     <h2 className="text-lg font-semibold text-slate-900">{disc.nome}</h2>
-                    <p className="text-sm text-slate-600">{disc.aulas.length} aulas</p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <p className="text-sm text-slate-600">{disc.aulas.length} aulas</p>
+                      {(() => {
+                        const info = getDiscPendingInfo(disc)
+                        if (!info) return null
+                        return (
+                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${info.badgeClass}`}>
+                            {info.count} {info.count === 1 ? 'pendente' : 'pendentes'}
+                          </span>
+                        )
+                      })()}
+                    </div>
                   </div>
                 </div>
                 {expandedItems.has(`disc-${disc.id}`) ? (
@@ -290,9 +365,31 @@ export default function Atividades() {
                               <span className="w-2 h-2 rounded-full bg-aula-500 flex-shrink-0" />
                               <div>
                                 <p className="text-xs text-aula-600 font-medium">
-                                  {new Date(aula.data).toLocaleDateString('pt-BR')}
+                                  {new Date(aula.data + 'T00:00:00').toLocaleDateString('pt-BR')}
                                 </p>
                                 <p className="text-slate-900 font-medium text-sm">{aula.conteudo}</p>
+                                {(() => {
+                                  const pending = aula.atividades.filter((a) => !a.concluida)
+                                  if (pending.length === 0) return null
+                                  const statuses = pending.map((a) => getDeadlineStatus(a.dataEntrega, a.concluida))
+                                  let urgency = 'normal'
+                                  for (const s of ['expirada', 'hoje', 'critico', 'urgente', 'atencao']) {
+                                    if (statuses.includes(s)) { urgency = s; break }
+                                  }
+                                  const badgeClass = {
+                                    expirada: 'bg-slate-800 text-slate-100',
+                                    hoje: 'bg-red-600 text-white',
+                                    critico: 'bg-red-100 text-red-700 border border-red-200',
+                                    urgente: 'bg-orange-100 text-orange-700 border border-orange-200',
+                                    atencao: 'bg-amber-100 text-amber-700 border border-amber-200',
+                                    normal: 'bg-slate-100 text-slate-600',
+                                  }[urgency]
+                                  return (
+                                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium mt-1 inline-block ${badgeClass}`}>
+                                      {pending.length} {pending.length === 1 ? 'pendente' : 'pendentes'}
+                                    </span>
+                                  )
+                                })()}
                               </div>
                             </div>
                             <div className="ml-4">
@@ -321,30 +418,29 @@ export default function Atividades() {
                                   {aula.atividades.map((atividade) => (
                                     <div
                                       key={atividade.id}
-                                      className={`rounded-lg border-l-4 p-3 ${getTipoBorderColor(atividade.tipo)} ${
-                                        atividade.concluida
-                                          ? 'bg-trabalho-50 border border-trabalho-200'
-                                          : 'bg-white border border-slate-200'
-                                      }`}
+                                      className={`rounded-lg p-3 ${getAtividadeCardStyle(atividade)}`}
                                     >
                                       <div className="flex items-start justify-between gap-2">
                                         <div className="flex-1">
-                                          <div className="flex items-center gap-2 mb-2">
+                                          <div className="flex items-center gap-2 mb-2 flex-wrap">
                                             <span className={`text-xs px-2 py-1 rounded ${getTipoBgColor(atividade.tipo)}`}>
                                               {getTipoLabel(atividade.tipo)}
                                             </span>
-                                            {atividade.concluida && (
-                                              <span className="text-xs px-2 py-1 rounded bg-green-100 text-green-800">
-                                                Concluída
-                                              </span>
-                                            )}
+                                            {(() => {
+                                              const badge = getDeadlineBadge(atividade.dataEntrega, atividade.concluida)
+                                              return (
+                                                <span className={`text-xs px-2 py-1 rounded font-medium ${badge.className}`}>
+                                                  {badge.label}
+                                                </span>
+                                              )
+                                            })()}
                                           </div>
                                           <h4 className="text-slate-900 font-medium text-sm">{atividade.titulo}</h4>
                                           {atividade.descricao && (
                                             <p className="text-slate-600 text-xs mt-1">{atividade.descricao}</p>
                                           )}
-                                          <p className="text-slate-600 text-xs mt-2">
-                                            Entrega: {new Date(atividade.dataEntrega).toLocaleDateString('pt-BR')}
+                                          <p className="text-slate-500 text-xs mt-2">
+                                            Entrega: {new Date(atividade.dataEntrega + 'T00:00:00').toLocaleDateString('pt-BR')}
                                           </p>
                                           {atividade.nota !== null && (
                                             <p className="text-slate-900 text-xs font-medium mt-1">

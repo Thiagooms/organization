@@ -6,6 +6,8 @@ import Periodos from './pages/Periodos'
 import Disciplinas from './pages/Disciplinas'
 import Aulas from './pages/Aulas'
 import Atividades from './pages/Atividades'
+import Prioridade from './pages/Prioridade'
+import Monitoria from './pages/Monitoria'
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
             <Route path="/disciplinas" element={<Disciplinas />} />
             <Route path="/aulas" element={<Aulas />} />
             <Route path="/atividades" element={<Atividades />} />
+            <Route path="/prioridade" element={<Prioridade />} />
+            <Route path="/monitoria" element={<Monitoria />} />
           </Routes>
         </ErrorBoundary>
       </Layout>
