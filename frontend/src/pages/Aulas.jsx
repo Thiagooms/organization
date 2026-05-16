@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ChevronDown, ChevronUp, Plus, Trash2, Edit2, AlertCircle, CheckCircle } from 'lucide-react'
+import { ChevronDown, ChevronUp, Plus, Trash2, Edit2, AlertCircle, CheckCircle, Check, X } from 'lucide-react'
 import { periodoAPI, disciplinaAPI, aulaAPI } from '../services/api'
 
 export default function Aulas() {
@@ -19,6 +19,7 @@ export default function Aulas() {
     dificuldade: 3,
     duvidas: '',
     observacoes: '',
+    presente: true,
   })
 
   useEffect(() => {
@@ -84,6 +85,7 @@ export default function Aulas() {
         dificuldade: 3,
         duvidas: '',
         observacoes: '',
+        presente: true,
       })
       setShowForm(false)
       setTimeout(() => setSuccess(null), 3000)
@@ -116,6 +118,7 @@ export default function Aulas() {
         dificuldade: 3,
         duvidas: '',
         observacoes: '',
+        presente: true,
       })
       setEditingAula(null)
       setShowForm(false)
@@ -148,6 +151,7 @@ export default function Aulas() {
       dificuldade: aula.dificuldade,
       duvidas: aula.duvidas || '',
       observacoes: aula.observacoes || '',
+      presente: aula.presente,
     })
     setShowForm(true)
   }
@@ -162,6 +166,7 @@ export default function Aulas() {
       dificuldade: 3,
       duvidas: '',
       observacoes: '',
+      presente: true,
     })
     setError(null)
     setShowForm(true)
@@ -227,7 +232,17 @@ export default function Aulas() {
                   <span className="w-2.5 h-2.5 rounded-full bg-disciplina-500 flex-shrink-0" />
                   <div>
                     <h2 className="text-lg font-semibold text-slate-900">{disc.nome}</h2>
-                    <p className="text-sm text-slate-600">{disc.aulas.length} aulas registradas</p>
+                    <div className="flex items-center gap-4 mt-1">
+                      <p className="text-sm text-slate-600">{disc.aulas.length} aulas</p>
+                      <div className="flex items-center gap-2">
+                        <Check className="w-4 h-4 text-green-600" />
+                        <p className="text-sm text-green-600 font-medium">{disc.aulas.filter(a => a.presente).length} presenças</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <X className="w-4 h-4 text-red-600" />
+                        <p className="text-sm text-red-600 font-medium">{disc.aulas.filter(a => !a.presente).length} faltas</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 {expandedDisciplinas.has(disc.id) ? (
@@ -278,18 +293,38 @@ export default function Aulas() {
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-2 gap-4 mb-3">
+                          <div className={`grid gap-4 mb-3 ${aula.presente ? 'grid-cols-3' : 'grid-cols-1'}`}>
+                            {aula.presente && (
+                              <>
+                                <div>
+                                  <p className="text-xs text-slate-600">Satisfação</p>
+                                  <p className={`text-lg font-semibold ${getScoreColor(aula.satisfacao)}`}>
+                                    {aula.satisfacao}/5
+                                  </p>
+                                </div>
+                                <div>
+                                  <p className="text-xs text-slate-600">Dificuldade</p>
+                                  <p className={`text-lg font-semibold ${getScoreColor(5 - aula.dificuldade)}`}>
+                                    {aula.dificuldade}/5
+                                  </p>
+                                </div>
+                              </>
+                            )}
                             <div>
-                              <p className="text-xs text-slate-600">Satisfação</p>
-                              <p className={`text-lg font-semibold ${getScoreColor(aula.satisfacao)}`}>
-                                {aula.satisfacao}/5
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-xs text-slate-600">Dificuldade</p>
-                              <p className={`text-lg font-semibold ${getScoreColor(5 - aula.dificuldade)}`}>
-                                {aula.dificuldade}/5
-                              </p>
+                              <p className="text-xs text-slate-600">Presença</p>
+                              <div className="flex items-center gap-1">
+                                {aula.presente ? (
+                                  <>
+                                    <Check className="w-5 h-5 text-green-600" />
+                                    <span className="text-sm font-semibold text-green-600">Presente</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <X className="w-5 h-5 text-red-600" />
+                                    <span className="text-sm font-semibold text-red-600">Faltou</span>
+                                  </>
+                                )}
+                              </div>
                             </div>
                           </div>
 
@@ -352,7 +387,7 @@ export default function Aulas() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className={`block text-sm font-medium mb-2 ${formData.presente ? 'text-slate-700' : 'text-slate-400'}`}>
                   Satisfação: {formData.satisfacao}
                 </label>
                 <input
@@ -361,12 +396,13 @@ export default function Aulas() {
                   max="5"
                   value={formData.satisfacao}
                   onChange={(e) => setFormData({ ...formData, satisfacao: e.target.value })}
-                  className="w-full"
+                  disabled={!formData.presente}
+                  className={`w-full ${!formData.presente ? 'opacity-50 cursor-not-allowed' : ''}`}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className={`block text-sm font-medium mb-2 ${formData.presente ? 'text-slate-700' : 'text-slate-400'}`}>
                   Dificuldade: {formData.dificuldade}
                 </label>
                 <input
@@ -375,7 +411,8 @@ export default function Aulas() {
                   max="5"
                   value={formData.dificuldade}
                   onChange={(e) => setFormData({ ...formData, dificuldade: e.target.value })}
-                  className="w-full"
+                  disabled={!formData.presente}
+                  className={`w-full ${!formData.presente ? 'opacity-50 cursor-not-allowed' : ''}`}
                 />
               </div>
 
@@ -399,6 +436,36 @@ export default function Aulas() {
                   rows="2"
                   placeholder="Observações adicionais..."
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-3">Presença</label>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, presente: true })}
+                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg border-2 transition-all ${
+                      formData.presente
+                        ? 'bg-green-50 border-green-500 text-green-700 font-semibold'
+                        : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
+                    }`}
+                  >
+                    <Check className="w-5 h-5" />
+                    Presente
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, presente: false })}
+                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg border-2 transition-all ${
+                      !formData.presente
+                        ? 'bg-red-50 border-red-500 text-red-700 font-semibold'
+                        : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
+                    }`}
+                  >
+                    <X className="w-5 h-5" />
+                    Faltou
+                  </button>
+                </div>
               </div>
 
               <div className="flex gap-3 pt-4">

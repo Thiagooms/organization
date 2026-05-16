@@ -34,4 +34,6 @@ public class AulaRequest {
     private String duvidas;
 
     private String observacoes;
+
+    private Boolean presente;
 }

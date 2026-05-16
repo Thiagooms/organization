@@ -28,6 +28,7 @@ public class DisciplinaService {
                 .nome(request.getNome())
                 .professor(request.getProfessor())
                 .cargaHoraria(request.getCargaHoraria())
+                .sala(request.getSala())
                 .periodo(periodo)
                 .build();
 
@@ -58,6 +59,7 @@ public class DisciplinaService {
         disciplina.setNome(request.getNome());
         disciplina.setProfessor(request.getProfessor());
         disciplina.setCargaHoraria(request.getCargaHoraria());
+        disciplina.setSala(request.getSala());
 
         Disciplina updated = disciplinaRepository.save(disciplina);
         return toResponse(updated);
@@ -75,6 +77,7 @@ public class DisciplinaService {
                 .nome(disciplina.getNome())
                 .professor(disciplina.getProfessor())
                 .cargaHoraria(disciplina.getCargaHoraria())
+                .sala(disciplina.getSala())
                 .periodoId(disciplina.getPeriodo().getId())
                 .build();
     }

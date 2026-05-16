@@ -14,12 +14,14 @@ export default function Disciplinas() {
     nome: '',
     professor: '',
     cargaHoraria: '',
+    sala: '',
   })
   const [editingId, setEditingId] = useState(null)
   const [editFormData, setEditFormData] = useState({
     nome: '',
     professor: '',
     cargaHoraria: '',
+    sala: '',
   })
 
   useEffect(() => {
@@ -51,7 +53,7 @@ export default function Disciplinas() {
         cargaHoraria: parseInt(formData.cargaHoraria),
       })
       setSuccess('Disciplina criada com sucesso!')
-      setFormData({ nome: '', professor: '', cargaHoraria: '' })
+      setFormData({ nome: '', professor: '', cargaHoraria: '', sala: '' })
       setShowForm(false)
       setTimeout(() => setSuccess(null), 3000)
       loadData()
@@ -68,6 +70,7 @@ export default function Disciplinas() {
       nome: disc.nome,
       professor: disc.professor,
       cargaHoraria: String(disc.cargaHoraria),
+      sala: disc.sala || '',
     })
     setError(null)
   }
@@ -166,6 +169,13 @@ export default function Disciplinas() {
             min="1"
             required
           />
+          <input
+            type="text"
+            placeholder="Sala (ex: Sala A05 - CCEA)"
+            value={formData.sala}
+            onChange={(e) => setFormData({ ...formData, sala: e.target.value })}
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-20"
+          />
           <div className="flex gap-2 pt-2">
             <button
               type="submit"
@@ -228,6 +238,13 @@ export default function Disciplinas() {
                     min="1"
                     required
                   />
+                  <input
+                    type="text"
+                    placeholder="Sala (ex: Sala A05 - CCEA)"
+                    value={editFormData.sala}
+                    onChange={(e) => setEditFormData({ ...editFormData, sala: e.target.value })}
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-20"
+                  />
                   <div className="flex gap-2 pt-1">
                     <button
                       type="submit"
@@ -251,6 +268,7 @@ export default function Disciplinas() {
                     <h3 className="text-lg font-semibold text-slate-900">{disc.nome}</h3>
                     <p className="text-sm text-slate-600 mt-2">Professor: {disc.professor}</p>
                     <p className="text-sm text-slate-600">Carga Horária: {disc.cargaHoraria}h</p>
+                    {disc.sala && <p className="text-sm text-slate-600">Sala: {disc.sala}</p>}
                   </div>
                   <button
                     onClick={() => handleEdit(disc)}

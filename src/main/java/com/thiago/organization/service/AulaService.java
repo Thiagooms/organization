@@ -31,6 +31,7 @@ public class AulaService {
                 .dificuldade(request.getDificuldade())
                 .duvidas(request.getDuvidas())
                 .observacoes(request.getObservacoes())
+                .presente(request.getPresente() != null ? request.getPresente() : true)
                 .disciplina(disciplina)
                 .build();
 
@@ -64,6 +65,9 @@ public class AulaService {
         aula.setDificuldade(request.getDificuldade());
         aula.setDuvidas(request.getDuvidas());
         aula.setObservacoes(request.getObservacoes());
+        if (request.getPresente() != null) {
+            aula.setPresente(request.getPresente());
+        }
 
         Aula updated = aulaRepository.save(aula);
         return toResponse(updated);
@@ -84,6 +88,7 @@ public class AulaService {
                 .dificuldade(aula.getDificuldade())
                 .duvidas(aula.getDuvidas())
                 .observacoes(aula.getObservacoes())
+                .presente(aula.getPresente())
                 .disciplinaId(aula.getDisciplina().getId())
                 .build();
     }

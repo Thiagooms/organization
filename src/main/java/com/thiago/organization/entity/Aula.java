@@ -38,6 +38,10 @@ public class Aula {
     @Column(columnDefinition = "TEXT")
     private String observacoes;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean presente = true;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "disciplina_id", nullable = false)
     private Disciplina disciplina;

@@ -20,5 +20,6 @@ public class AulaResponse {
     private Integer dificuldade;
     private String duvidas;
     private String observacoes;
+    private Boolean presente;
     private Long disciplinaId;
 }

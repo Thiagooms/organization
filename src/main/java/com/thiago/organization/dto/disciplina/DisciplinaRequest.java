@@ -23,4 +23,6 @@ public class DisciplinaRequest {
     @NotNull(message = "Carga horária é obrigatória")
     @Positive(message = "Carga horária deve ser positiva")
     private Integer cargaHoraria;
+
+    private String sala;
 }

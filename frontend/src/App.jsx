@@ -8,6 +8,7 @@ import Aulas from './pages/Aulas'
 import Atividades from './pages/Atividades'
 import Prioridade from './pages/Prioridade'
 import Monitoria from './pages/Monitoria'
+import Quadro from './pages/Quadro'
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route path="/atividades" element={<Atividades />} />
             <Route path="/prioridade" element={<Prioridade />} />
             <Route path="/monitoria" element={<Monitoria />} />
+            <Route path="/quadro" element={<Quadro />} />
           </Routes>
         </ErrorBoundary>
       </Layout>

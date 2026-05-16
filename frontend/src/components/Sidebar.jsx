@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Calendar, BookOpen, Clock, CheckSquare, Flag, GraduationCap, X } from 'lucide-react'
+import { LayoutDashboard, Calendar, BookOpen, Clock, CheckSquare, Flag, GraduationCap, Grid3x3, X } from 'lucide-react'
 
 const menuItems = [
   { label: 'Dashboard',    path: '/',           icon: LayoutDashboard },
@@ -7,6 +7,7 @@ const menuItems = [
   { label: 'Disciplinas',  path: '/disciplinas', icon: BookOpen },
   { label: 'Aulas',        path: '/aulas',      icon: Clock },
   { label: 'Atividades',   path: '/atividades', icon: CheckSquare },
+  { label: 'Quadro',       path: '/quadro',     icon: Grid3x3 },
   { label: 'Prioridade',   path: '/prioridade', icon: Flag },
   { label: 'Monitoria',    path: '/monitoria',  icon: GraduationCap },
 ]

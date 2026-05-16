@@ -15,5 +15,6 @@ public class DisciplinaResponse {
     private String nome;
     private String professor;
     private Integer cargaHoraria;
+    private String sala;
     private Long periodoId;
 }
